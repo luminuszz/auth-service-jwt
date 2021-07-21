@@ -19,7 +19,8 @@ services:
   build: .
   ports:
    - ${API_PORT}:${API_PORT}
-
+  tmpfs:
+   - /home/temp
   volumes:
    - .:/home/services
   depends_on:

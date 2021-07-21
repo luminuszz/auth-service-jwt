@@ -6,6 +6,8 @@ export class User implements PrismaUser {
 	email: string;
 	phone: string | null;
 	password: string;
+	avatarUrl: string;
+	avatar: string;
 	updated_at: Date;
 	created_at: Date;
 }
