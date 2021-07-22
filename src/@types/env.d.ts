@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 declare interface EnvVariables {
 	DB_PORT: string;
 	DB_USER: string;

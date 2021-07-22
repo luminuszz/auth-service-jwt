@@ -1,16 +1,13 @@
-import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
+import { IHashProvider } from '../contracts/hash.provider';
 import { BcryptHashImplementation } from './bcrypt.implementation';
-import { IHashProvider } from '../models/hash.provider';
 
-export const HashProviderFactory: Provider = {
+export const HashProviderFactory = {
 	provide: IHashProvider,
-	useFactory: (configService: ConfigService<EnvVariables>) => {
-		return configService.get('NODE_ENV') === 'development'
-			? BcryptHashImplementation
-			: BcryptHashImplementation;
-	},
+	useFactory: (configService: ConfigService<EnvVariables>) =>
+		configService.get('NODE_ENV') === 'dev'
+			? new BcryptHashImplementation()
+			: new BcryptHashImplementation(),
 
 	inject: [ConfigService],
 };

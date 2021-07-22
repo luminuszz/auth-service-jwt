@@ -20,7 +20,8 @@
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
 		"test:e2e": "jest --config ./test/jest-e2e.json",
 		"prisma": "export DB_HOST=localhost && npx prisma",
-		"start:docker": "docker-compose up"
+		"prisma:docker": "docker exec app_api export DB_HOST=db_go_finances && npx prisma db push",
+		"docker:restart_modules": "docker exec app_api rm -rf node_modules && yarn"
 	},
 	"dependencies": {
 		"@nestjs/common": "^7.6.15",

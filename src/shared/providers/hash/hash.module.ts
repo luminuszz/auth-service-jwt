@@ -3,8 +3,7 @@ import { HashService } from './hash.service';
 import { HashProviderFactory } from './implementations';
 
 @Module({
-	providers: [HashService, HashProviderFactory],
-
+	providers: [HashProviderFactory, HashService],
 	exports: [HashService],
 })
 export class HashModule {}

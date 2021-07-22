@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { join } from 'path';
 import { unlink, writeFile } from 'fs/promises';
+import { join } from 'path';
 
-import { IUploadProvider } from '../upload.provider';
+import { IUploadProvider } from '../contracts/upload.provider';
+import { SaveFileDTO } from '../dto/saveImage.dto';
 
 @Injectable()
 export class UploadLocalImplementation implements IUploadProvider {
@@ -11,22 +12,18 @@ export class UploadLocalImplementation implements IUploadProvider {
 
 	constructor(private readonly configService: ConfigService<EnvVariables>) {}
 
-	async saveFile(file: Express.Multer.File): Promise<string> {
-		const hashCode = Date.now().toString();
+	async saveFile({ fileBuffer, fileName }: SaveFileDTO): Promise<string> {
+		const storagePath = join(this.storagePath, fileName);
 
-		const imageId = `${hashCode}-${file.originalname}`;
-
-		const storagePath = join(this.storagePath, imageId);
-
-		await writeFile(storagePath, file.buffer);
+		await writeFile(storagePath, fileBuffer);
 
 		const apiAddress = this.configService.get('API_ADDRESS');
 
-		const imagePath = join(apiAddress, 'users', 'files', 'avatar', imageId);
+		const imagePath = join(apiAddress, 'users', 'files', 'avatar', fileName);
 
 		return imagePath;
 	}
-	async deleteFile(fileId: string): Promise<void> {
-		await unlink(join(this.storagePath, fileId));
+	async deleteFile(fileName: string): Promise<void> {
+		await unlink(join(this.storagePath, fileName));
 	}
 }

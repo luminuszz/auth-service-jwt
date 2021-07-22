@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { hash } from 'bcryptjs';
+
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { HashService } from 'src/shared/providers/hash/hash.service';
 import { UploadService } from 'src/shared/providers/upload/upload.service';
@@ -16,17 +16,23 @@ export class UsersService {
 		private readonly hashService: HashService,
 	) {}
 
-	async create(createUserDTO: CreateUserDTO): Promise<User> {
+	public async create(createUserDTO: CreateUserDTO): Promise<User> {
 		const { email, password } = createUserDTO;
-		const verifyUserExists = await this.prismaService.user.findUnique({
+
+		const verifyUserExists = await this.prismaService.user.findFirst({
 			where: {
 				email,
 			},
 		});
 
-		if (verifyUserExists) throw new BadRequestException('User already exists');
+		console.log(verifyUserExists);
+
+		if (verifyUserExists) {
+			throw new BadRequestException('User already exists');
+		}
 
 		const passwordHash = await this.hashService.createHash(password);
+
 		const user = await this.prismaService.user.create({
 			data: {
 				...createUserDTO,
@@ -37,10 +43,12 @@ export class UsersService {
 		return user;
 	}
 
-	async findByEmail(email: string): Promise<User | undefined> {
-		return this.prismaService.user.findUnique({
+	public async findByEmail(email: string): Promise<User> {
+		const user = await this.prismaService.user.findUnique({
 			where: { email },
 		});
+
+		return user;
 	}
 
 	async findById(id: string): Promise<User | undefined> {
@@ -49,12 +57,17 @@ export class UsersService {
 		});
 	}
 
-	async uploadAvatarImage(avatarImage: AvatarImage, id: string): Promise<User> {
+	public async uploadAvatarImage(
+		avatarImage: AvatarImage,
+		id: string,
+	): Promise<User> {
 		const verifyUserExists = await this.findById(id);
 
 		if (!verifyUserExists) throw new BadRequestException('User not found');
 
-		const imageUrl = await this.uploadService.saveFile(avatarImage);
+		const hashName = `${Date.now().toString()}-${avatarImage.originalname}`;
+
+		const imageUrl = await this.uploadService.saveFile(avatarImage, hashName);
 
 		const user = await this.prismaService.user.update({
 			where: {
@@ -64,6 +77,14 @@ export class UsersService {
 				avatarUrl: imageUrl,
 			},
 		});
+
+		if (verifyUserExists.avatarUrl) {
+			const split = verifyUserExists.avatarUrl.split('/');
+
+			const imageName = split[split.length - 1];
+
+			await this.uploadService.deleteFile(imageName);
+		}
 
 		return user;
 	}

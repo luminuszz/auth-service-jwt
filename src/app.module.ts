@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
-import { HashModule } from './shared/providers/hash/hash.module';
 
 @Module({
 	imports: [
@@ -14,7 +13,6 @@ import { HashModule } from './shared/providers/hash/hash.module';
 		ConfigModule.forRoot({
 			isGlobal: true,
 		}),
-		HashModule,
 	],
 })
 export class AppModule {}
