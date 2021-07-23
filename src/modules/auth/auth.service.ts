@@ -13,7 +13,7 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 	) {}
 
-	async validateUser(email: string, password: string): Promise<User> {
+	async validateUser(email: string, password: string) {
 		const user = await this.usersService.findByEmail(email);
 
 		if (!user) throw new UnauthorizedException('email or password is incorrect');

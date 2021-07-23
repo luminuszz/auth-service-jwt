@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 
 @Module({
 	imports: [
@@ -13,6 +14,7 @@ import { PrismaModule } from './shared/prisma/prisma.module';
 		ConfigModule.forRoot({
 			isGlobal: true,
 		}),
+		TransactionsModule,
 	],
 })
 export class AppModule {}

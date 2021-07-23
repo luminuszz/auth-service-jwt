@@ -4,7 +4,6 @@ import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { HashService } from 'src/shared/providers/hash/hash.service';
 import { UploadService } from 'src/shared/providers/upload/upload.service';
 import { CreateUserDTO } from './dto/createUser.dto';
-import { User } from './models/user';
 
 type AvatarImage = Express.Multer.File;
 
@@ -16,7 +15,7 @@ export class UsersService {
 		private readonly hashService: HashService,
 	) {}
 
-	public async create(createUserDTO: CreateUserDTO): Promise<User> {
+	public async create(createUserDTO: CreateUserDTO) {
 		const { email, password } = createUserDTO;
 
 		const verifyUserExists = await this.prismaService.user.findFirst({
@@ -43,7 +42,7 @@ export class UsersService {
 		return user;
 	}
 
-	public async findByEmail(email: string): Promise<User> {
+	public async findByEmail(email: string) {
 		const user = await this.prismaService.user.findUnique({
 			where: { email },
 		});
@@ -51,39 +50,34 @@ export class UsersService {
 		return user;
 	}
 
-	async findById(id: string): Promise<User | undefined> {
-		return this.prismaService.user.findUnique({
+	async findById(id: string) {
+		const user = this.prismaService.user.findUnique({
 			where: { id },
 		});
+
+		return user;
 	}
 
-	public async uploadAvatarImage(
-		avatarImage: AvatarImage,
-		id: string,
-	): Promise<User> {
+	public async uploadAvatarImage(avatarImage: AvatarImage, id: string) {
 		const verifyUserExists = await this.findById(id);
 
 		if (!verifyUserExists) throw new BadRequestException('User not found');
 
 		const hashName = `${Date.now().toString()}-${avatarImage.originalname}`;
 
-		const imageUrl = await this.uploadService.saveFile(avatarImage, hashName);
+		await this.uploadService.saveFile(avatarImage, hashName);
 
 		const user = await this.prismaService.user.update({
 			where: {
 				id,
 			},
 			data: {
-				avatarUrl: imageUrl,
+				avatar: hashName,
 			},
 		});
 
-		if (verifyUserExists.avatarUrl) {
-			const split = verifyUserExists.avatarUrl.split('/');
-
-			const imageName = split[split.length - 1];
-
-			await this.uploadService.deleteFile(imageName);
+		if (verifyUserExists.avatar) {
+			await this.uploadService.deleteFile(verifyUserExists.avatar);
 		}
 
 		return user;

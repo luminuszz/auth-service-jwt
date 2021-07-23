@@ -8,8 +8,8 @@ export const UploadProviderFactory: Provider = {
 	provide: IUploadProvider,
 	useFactory: (configService: ConfigService<EnvVariables>) => {
 		return configService.get('NODE_ENV') === 'development'
-			? new UploadLocalImplementation(configService)
-			: new UploadLocalImplementation(configService);
+			? new UploadLocalImplementation()
+			: new UploadLocalImplementation();
 	},
 
 	inject: [ConfigService],
