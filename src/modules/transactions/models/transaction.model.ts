@@ -14,13 +14,15 @@ export class Transaction implements PrismaTransaction {
 
 	type: TransactionType;
 
+	description: string | null;
+
 	userId: string;
 
 	created_at: Date;
 
 	updated_at: Date;
 
-	category: Category;
+	category: Category | null;
 
 	constructor(partial: Partial<Transaction>) {
 		Object.assign(this, partial);
