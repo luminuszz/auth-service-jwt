@@ -94,11 +94,10 @@ export class UsersService {
 				throw new BadRequestException('Email already exists');
 		}
 
-		if (updateUserDTO.password) {
+		if (updateUserDTO.password)
 			updateUserDTO.password = await this.hashService.createHash(
 				updateUserDTO.password,
 			);
-		}
 
 		return this.prismaService.user.update({
 			where: {
