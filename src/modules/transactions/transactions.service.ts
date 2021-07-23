@@ -14,6 +14,7 @@ export class TransactionsService {
 		type,
 		userId,
 		value,
+		category,
 	}: CreateTransactionDTO): Promise<Transaction> {
 		const parsedValue = value * 100;
 
@@ -22,6 +23,7 @@ export class TransactionsService {
 				type,
 				value: parsedValue,
 				userId,
+				category,
 			},
 		});
 

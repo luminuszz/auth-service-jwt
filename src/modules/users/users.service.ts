@@ -4,6 +4,7 @@ import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { HashService } from 'src/shared/providers/hash/hash.service';
 import { UploadService } from 'src/shared/providers/upload/upload.service';
 import { CreateUserDTO } from './dto/createUser.dto';
+import { UpdateUserDTO } from './dto/updateUser.dto';
 
 type AvatarImage = Express.Multer.File;
 
@@ -53,9 +54,6 @@ export class UsersService {
 	async findById(id: string) {
 		const user = this.prismaService.user.findUnique({
 			where: { id },
-			include: {
-				transactions: true,
-			},
 		});
 
 		return user;
@@ -84,5 +82,32 @@ export class UsersService {
 		}
 
 		return user;
+	}
+
+	async updateUser(id: string, updateUserDTO: UpdateUserDTO) {
+		if (updateUserDTO.email) {
+			const verifyUserWithEmailExists = await this.findByEmail(
+				updateUserDTO.email,
+			);
+
+			if (verifyUserWithEmailExists)
+				throw new BadRequestException('Email already exists');
+		}
+
+		if (updateUserDTO.password) {
+			updateUserDTO.password = await this.hashService.createHash(
+				updateUserDTO.password,
+			);
+		}
+
+		return this.prismaService.user.update({
+			where: {
+				id,
+			},
+
+			data: {
+				...updateUserDTO,
+			},
+		});
 	}
 }

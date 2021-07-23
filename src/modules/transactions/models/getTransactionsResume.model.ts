@@ -1,4 +1,4 @@
-import { Expose, Transform, Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { Transaction } from './transaction.model';
 
 export class GetTransactionResume {

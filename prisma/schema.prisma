@@ -28,6 +28,7 @@ model Transaction {
     id         String          @id @default(uuid())
     value      Float
     type       TransactionType
+    category   Category? 
     user       User            @relation(fields: [userId], references: id)
     userId     String
     created_at DateTime        @default(now())
@@ -42,4 +43,13 @@ enum TransactionType {
     INCOMING
     EXIT
 
+}
+
+enum Category {
+    purchases
+    food
+    salary
+    car
+    leisure
+    studies
 }

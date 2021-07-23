@@ -1,4 +1,5 @@
 import {
+	Category,
 	Transaction as PrismaTransaction,
 	TransactionType,
 } from '@prisma/client';
@@ -18,6 +19,8 @@ export class Transaction implements PrismaTransaction {
 	created_at: Date;
 
 	updated_at: Date;
+
+	category: Category;
 
 	constructor(partial: Partial<Transaction>) {
 		Object.assign(this, partial);

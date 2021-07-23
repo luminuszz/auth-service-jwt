@@ -18,6 +18,8 @@ import { CreateUserDTO } from './dto/createUser.dto';
 import { UsersService } from './users.service';
 import { join } from 'path';
 import { Parse } from 'src/shared/decorators/parse.decorator';
+import { Put } from '@nestjs/common';
+import { UpdateUserDTO } from './dto/updateUser.dto';
 
 @Parse(User)
 @Controller('users')
@@ -29,6 +31,15 @@ export class UsersController {
 		const user = await this.usersService.create(createUserDto);
 
 		return user;
+	}
+
+	@Auth()
+	@Put()
+	async updateUser(
+		@Body() updateUserDTO: UpdateUserDTO,
+		@UserRequest('id') id: string,
+	) {
+		return this.usersService.updateUser(id, updateUserDTO);
 	}
 
 	@Auth()

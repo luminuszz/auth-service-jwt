@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { classToPlain, plainToClass } from 'class-transformer';
+import { classToPlain } from 'class-transformer';
 
 export interface Response<T> {
 	data: T;
@@ -23,8 +23,6 @@ export class TransformInterceptor<T>
 		validatorClass: any,
 		payloadStream: Record<string, any> | Array<any>,
 	): any {
-		console.log(payloadStream);
-
 		if (payloadStream instanceof Array) {
 			return payloadStream.map((item) => {
 				const instanceValidator = new validatorClass(item);
