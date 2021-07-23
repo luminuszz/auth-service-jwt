@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { plainToClass, classToClass, classToPlain } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 
 export interface Response<T> {
 	data: T;
@@ -19,6 +19,25 @@ export class TransformInterceptor<T>
 {
 	constructor(private readonly reflector: Reflector) {}
 
+	private parseValue(
+		validatorClass: any,
+		payloadStream: Record<string, any> | Array<any>,
+	): any {
+		if (payloadStream instanceof Array) {
+			return payloadStream.map((item) => {
+				const instanceValidator = new validatorClass(item);
+
+				return classToPlain(instanceValidator);
+			});
+		} else {
+			const instanceValidator = new validatorClass(payloadStream);
+
+			const transformToPlain = classToPlain(instanceValidator);
+
+			return transformToPlain;
+		}
+	}
+
 	intercept(
 		context: ExecutionContext,
 		next: CallHandler,
@@ -27,18 +46,12 @@ export class TransformInterceptor<T>
 			this.reflector.get<any>('transformer', context.getClass()) ||
 			this.reflector.get<any>('transformer', context.getHandler());
 
-		return next.handle().pipe(
-			map((data) => {
-				if (validatorClass) {
-					const instanceValidator = new validatorClass(data);
-
-					const transformToPlain = classToPlain(instanceValidator);
-
-					return transformToPlain as any;
-				}
-
-				return data;
-			}),
-		);
+		return next
+			.handle()
+			.pipe(
+				map((data) =>
+					validatorClass ? this.parseValue(validatorClass, data) : data,
+				),
+			);
 	}
 }

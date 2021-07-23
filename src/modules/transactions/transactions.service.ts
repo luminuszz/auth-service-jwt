@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'src/shared/prisma/prisma.service';
-import { Transaction } from './models/transaction.model';
+import { Transaction } from '@prisma/client';
 import { CreateTransactionDTO } from './dto/createTransaction.dto';
 import { GetTransactionPeriodDTO } from './dto/getTransactionPeriod.dto';
 
@@ -14,7 +14,7 @@ export class TransactionsService {
 		userId,
 		value,
 	}: CreateTransactionDTO): Promise<Transaction> {
-		const parsedValue = value / 100;
+		const parsedValue = value * 100;
 
 		const transaction = await this.prismaService.transaction.create({
 			data: {
@@ -50,10 +50,6 @@ export class TransactionsService {
 					lte: period,
 				},
 				userId,
-			},
-
-			include: {
-				user: true,
 			},
 		});
 

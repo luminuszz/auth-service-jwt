@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { Auth } from 'src/modules/auth/decorators/auth.decorator';
-import { User as UserRequest } from 'src/modules/auth/decorators/user.decorator';
+import { UserRequest } from 'src/modules/auth/decorators/user.decorator';
 import { User } from './models/user';
 import { CreateUserDTO } from './dto/createUser.dto';
 import { UsersService } from './users.service';

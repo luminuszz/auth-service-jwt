@@ -1,11 +1,14 @@
 import { Body, Controller, Post, Get, Param } from '@nestjs/common';
 
-import { User } from '../auth/decorators/user.decorator';
+import { Transaction } from './models/transaction.model';
+import { UserRequest } from '../auth/decorators/user.decorator';
 import { Auth } from '../auth/decorators/auth.decorator';
+import { Parse } from 'src/shared/decorators/parse.decorator';
 import { CreateTransactionDTO } from './dto/createTransaction.dto';
 import { TransactionsService } from './transactions.service';
 
 @Auth()
+@Parse(Transaction)
 @Controller('transactions')
 export class TransactionsController {
 	constructor(private readonly transactionService: TransactionsService) {}
@@ -13,7 +16,7 @@ export class TransactionsController {
 	@Post()
 	async create(
 		@Body() createTransactionDTO: CreateTransactionDTO,
-		@User('id') userId: string,
+		@UserRequest('id') userId: string,
 	) {
 		return this.transactionService.createTransaction({
 			...createTransactionDTO,
@@ -29,7 +32,7 @@ export class TransactionsController {
 	@Get('period/:year/:mouth')
 	async getAllTransactions(
 		@Param() params: { year: number; mouth: number },
-		@User('id') userId: string,
+		@UserRequest('id') userId: string,
 	) {
 		const { mouth, year } = params;
 

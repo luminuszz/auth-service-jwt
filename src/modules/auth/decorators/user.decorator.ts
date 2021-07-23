@@ -8,7 +8,7 @@ export type PayloadUser = {
 
 type PayloadUserKey = keyof PayloadUser;
 
-export const User = createParamDecorator(
+export const UserRequest = createParamDecorator(
 	(userKey: PayloadUserKey, ctx: ExecutionContext) => {
 		const { user } = ctx.switchToHttp().getRequest<{ user: PayloadUser }>();
 

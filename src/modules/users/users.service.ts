@@ -53,6 +53,9 @@ export class UsersService {
 	async findById(id: string) {
 		const user = this.prismaService.user.findUnique({
 			where: { id },
+			include: {
+				transactions: true,
+			},
 		});
 
 		return user;
