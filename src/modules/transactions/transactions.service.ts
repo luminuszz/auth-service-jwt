@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { Transaction } from '@prisma/client';
+import { getDate, endOfMonth, startOfMonth } from 'date-fns';
 
 import { PrismaService } from 'src/shared/prisma/prisma.service';
-import { Transaction } from '@prisma/client';
 import { CreateTransactionDTO } from './dto/createTransaction.dto';
 import { GetTransactionPeriodDTO } from './dto/getTransactionPeriod.dto';
 
@@ -42,17 +43,58 @@ export class TransactionsService {
 		userId,
 		year,
 	}: GetTransactionPeriodDTO) {
-		const period = new Date(year, mouth);
+		const queryDate = new Date(mouth, year);
+
+		const lastDateOfMouth = getDate(endOfMonth(queryDate));
+
+		const initialDateOfMouth = getDate(startOfMonth(queryDate));
+
+		const finallyPeriod = new Date(year, mouth, lastDateOfMouth);
+
+		const initialPeriod = new Date(year, mouth, initialDateOfMouth);
 
 		const transactions = this.prismaService.transaction.findMany({
 			where: {
 				created_at: {
-					lte: period,
+					lte: finallyPeriod,
+					gte: initialPeriod,
 				},
 				userId,
 			},
 		});
 
 		return transactions;
+	}
+
+	async getUserResumeTransactions(userId: string) {
+		const currentDate = new Date();
+
+		const transactions = await this.getTransactionsByPeriod({
+			mouth: currentDate.getMonth(),
+			year: currentDate.getFullYear(),
+			userId,
+		});
+
+		const { incoming, out } = transactions.reduce(
+			(acc, current) => {
+				current.type === 'INCOMING'
+					? (acc.incoming = +current.value)
+					: (acc.out = +current.value);
+
+				return acc;
+			},
+			{
+				incoming: 0,
+				out: 0,
+			},
+		);
+
+		console.log(transactions, incoming, out);
+
+		return {
+			transactions,
+			incoming,
+			out,
+		};
 	}
 }

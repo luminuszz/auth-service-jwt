@@ -23,6 +23,8 @@ export class TransformInterceptor<T>
 		validatorClass: any,
 		payloadStream: Record<string, any> | Array<any>,
 	): any {
+		console.log(payloadStream);
+
 		if (payloadStream instanceof Array) {
 			return payloadStream.map((item) => {
 				const instanceValidator = new validatorClass(item);
@@ -43,8 +45,8 @@ export class TransformInterceptor<T>
 		next: CallHandler,
 	): Observable<Response<T>> {
 		const validatorClass =
-			this.reflector.get<any>('transformer', context.getClass()) ||
-			this.reflector.get<any>('transformer', context.getHandler());
+			this.reflector.get<any>('transformer', context.getHandler()) ||
+			this.reflector.get<any>('transformer', context.getClass());
 
 		return next
 			.handle()

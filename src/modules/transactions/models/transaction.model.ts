@@ -3,7 +3,7 @@ import {
 	TransactionType,
 } from '@prisma/client';
 
-import { Expose, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 
 export class Transaction implements PrismaTransaction {
 	id: string;
