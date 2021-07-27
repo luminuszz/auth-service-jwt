@@ -23,7 +23,7 @@ export class AuthService {
 		if (!verifyPassword)
 			throw new UnauthorizedException('email or password is incorrect');
 
-		return user;
+		return user as User;
 	}
 
 	async login({ email, password }: CreateLoginDTO): Promise<any> {
@@ -31,14 +31,20 @@ export class AuthService {
 
 		if (!user) throw new UnauthorizedException('Invalid credentials');
 
-		const payload = await this.jwtService.signAsync({
+		const tokenSub = {
 			email: user.email,
 			id: user.id,
 			name: user.name,
-		});
+			avatarUrl: user.avatarPath,
+		};
+
+		console.log(user);
+
+		const payload = await this.jwtService.signAsync(tokenSub);
 
 		return {
 			access_token: payload,
+			...user,
 		};
 	}
 }
