@@ -48,6 +48,19 @@ export class ReportConsumer {
 		const transactions = await this.transactionService.getTransactionsByPeriod({
 			...data,
 		});
+		const { incoming, out } = transactions.reduce(
+			(acc, current) => {
+				current.type === 'INCOMING'
+					? (acc.incoming = +current.value)
+					: (acc.out = +current.value);
+
+				return acc;
+			},
+			{
+				incoming: 0,
+				out: 0,
+			},
+		);
 
 		const formatTransactions = transactions.map((tr) => [
 			tr.id,
@@ -57,6 +70,7 @@ export class ReportConsumer {
 				style: 'currency',
 				maximumFractionDigits: 2,
 			}).format(tr.value),
+			incoming - out,
 		]);
 
 		const doc: TDocumentDefinitions = {
@@ -66,8 +80,21 @@ export class ReportConsumer {
 			content: {
 				table: {
 					headerRows: 1,
-					body: [['id', 'Tipo', 'Valor'], ...formatTransactions],
+					body: [['id', 'Tipo', 'Valor', 'total'], ...formatTransactions],
 				},
+
+				text: [
+					{
+						text: 'Média',
+					},
+					{
+						text: Intl.NumberFormat('pt-br', {
+							currency: 'BRL',
+							style: 'currency',
+							maximumFractionDigits: 2,
+						}).format(incoming - out),
+					},
+				],
 			},
 		};
 
