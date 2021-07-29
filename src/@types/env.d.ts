@@ -9,4 +9,6 @@ declare interface EnvVariables {
 	NODE_ENV: 'development' | 'production';
 	DATABASE_URL: string;
 	API_ADDRESS: string;
+	REDIS_PORT: number;
+	REDIS_HOST: string;
 }

@@ -1,10 +1,8 @@
 import { ConfigService } from '@nestjs/config';
-import { User as PrismaUser } from '@prisma/client';
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Prisma } from '@prisma/client';
+import { Exclude, Expose } from 'class-transformer';
 
-import { Transaction } from 'src/modules/transactions/models/transaction.model';
-
-export class User implements PrismaUser {
+export class User implements Prisma.UserCreateInput {
 	@Exclude()
 	password: string;
 

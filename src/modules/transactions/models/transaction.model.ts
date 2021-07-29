@@ -5,6 +5,7 @@ import {
 } from '@prisma/client';
 
 import { Transform } from 'class-transformer';
+import { User } from 'src/modules/users/models/user';
 
 export class Transaction implements PrismaTransaction {
 	id: string;
@@ -23,6 +24,8 @@ export class Transaction implements PrismaTransaction {
 	updated_at: Date;
 
 	category: Category | null;
+
+	user?: User;
 
 	constructor(partial: Partial<Transaction>) {
 		Object.assign(this, partial);

@@ -23,9 +23,9 @@ export class TransactionsService {
 			data: {
 				type,
 				value: parsedValue,
-				userId,
 				category,
 				description,
+				userId,
 			},
 		});
 

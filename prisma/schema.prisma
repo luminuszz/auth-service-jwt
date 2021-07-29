@@ -19,25 +19,45 @@ model User {
     created_at   DateTime      @default(now())
     avatar       String?
     transactions Transaction[]
+    reports TransactionReport[]
 
 
     @@map("users")
 }
 
 model Transaction {
-    id         String          @id @default(uuid())
-    value      Float
-    type       TransactionType
-    category   Category? 
-    user       User            @relation(fields: [userId], references: id)
-    userId     String
-    description String?        
-    created_at DateTime        @default(now())
-    updated_at DateTime        @updatedAt
+    id          String          @id @default(uuid())
+    value       Float
+    type        TransactionType
+    category    Category?
+    user        User            @relation(fields: [userId], references: id)
+    userId      String
+    description String?
+    created_at  DateTime        @default(now())
+    updated_at  DateTime        @updatedAt
 
 
 
     @@map("transctions")
+}
+
+model TransactionReport {
+
+    id String @id @default(uuid())
+
+    userId String
+
+    reportName String
+
+    isReady Boolean? @default(false)
+
+    user User @relation(fields: [userId], references: id)
+
+    created_at  DateTime        @default(now())
+
+    updated_at  DateTime        @updatedAt
+
+    @@map("transactions_report")
 }
 
 enum TransactionType {
